@@ -1,6 +1,7 @@
 const ROUTES = {
     ROOT: "/",
-    USERNAME: "/:username"
+    USERNAME: "/:username",
+    START: "/start"
 }
 
 export { ROUTES }
