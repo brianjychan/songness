@@ -3,12 +3,14 @@ import { useFirebase, Firebase } from '../Firebase'
 import { Button, Container, Row, Col, Spinner } from 'react-bootstrap'
 import { useSession } from '../Session'
 import styles from './Home.module.css'
+import { functions, auth } from 'firebase'
 
 const HomePage: React.FC = () => {
     const firebase = useFirebase()
     const session = useSession()
 
     const [params, setParams] = useState({} as any);
+    const [user, setUser] = useState(null);
 
     const getHashParams = () => {
         var hashParams = {} as any;
@@ -17,13 +19,21 @@ const HomePage: React.FC = () => {
         while (e = r.exec(q)) {
             hashParams[e[1]] = decodeURIComponent(e[2]);
         }
+        console.log(hashParams)
         return hashParams;
     }
 
     useEffect(() => {
         const getData = async () => {
             try {
-                setParams(getHashParams())
+                const hashParams = getHashParams();
+                console.log(hashParams);
+                setParams(hashParams);
+
+                //create new auth user
+                const customToken = await functions().httpsCallable('getCustomToken')({ access_token: hashParams.access_token })
+
+                console.log('customToken = ', customToken)
             } catch (e) {
                 alert(e)
             }
@@ -38,7 +48,7 @@ const HomePage: React.FC = () => {
                 <h1>Your access code is: {params.access_code}</h1>
             </Row>
             <Row className={styles.paddingTop}>
-                <Button><a href='/start/login'>Start</a></Button>
+                <Button><a href='/login'>Start</a></Button>
             </Row>
         </Container>
     )
