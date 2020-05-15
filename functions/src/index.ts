@@ -40,7 +40,7 @@ exports.login = functions.https.onRequest((req, res) => {
     const state = generateRandomString(16);
     res.set('Set-Cookie', `__session=${state};`);
 
-    const scope = 'user-read-private user-read-email';
+    const scope = 'user-read-private user-read-email user-read-playback-state';
     res.redirect('https://accounts.spotify.com/authorize?' +
         querystring.stringify({
             response_type: 'code',
@@ -100,7 +100,8 @@ exports.callback = functions.https.onRequest((req, res) => {
                     email: bod.email,
                     displayName: bod.display_name,
                 })
-                admin.firestore().collection('users').doc(uid).set(bod)
+                admin.firestore().collection('users').doc(uid).update({ ...bod, access_token: access_token, refresh_token: refresh_token }).catch(e => { console.log(e) })
+                //admin.firestore().collection('users').doc(uid).update({ access_token: access_token, refresh_token: refresh_token })
             });
 
             // we can also pass the token to the browser to make requests from there
@@ -120,7 +121,7 @@ exports.callback = functions.https.onRequest((req, res) => {
 })
 
 exports.getCustomToken = functions.https.onCall(async (data, context) => {
-    console.log('data = ', data)
+    console.log('data = ', data);
     const access_token = data.access_token;
     const options = {
         url: 'https://api.spotify.com/v1/me',
@@ -141,17 +142,26 @@ exports.getCustomToken = functions.https.onCall(async (data, context) => {
         .catch((err) => {
             console.log(err);
         })
-    /*
-    request.get(options, function (err, result, bod) {
-        return bod;
-        const uid = bod.id;
-        admin.auth().createCustomToken(uid)
-            .then(customToken => {
-                console.log('customToken = ', customToken)
-                return { 'token': customToken }
-            });
-        */
 });
+
+exports.getCurrentSong = functions.https.onCall(async (data, context) => {
+    console.log('data = ', data);
+    const access_token = data.access_token;
+    const options = {
+        url: 'https://api.spotify.com/v1/me/player/currently-playing',
+        headers: { 'Authorization': 'Bearer ' + access_token },
+        json: true
+    };
+
+    return rp(options)
+        .then(async (bod) => {
+            console.log('bod = ', bod);
+            return bod;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
 
 //app.get('*/callback', function (req, res) {
 

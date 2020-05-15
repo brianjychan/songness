@@ -91,48 +91,4 @@ const AppWithAuth: React.FC = () => {
     )
 }
 
-const AppWithTwitter: React.FC = () => {
-    const firebase = useFirebase()
-
-    const getTwitterResult = useCallback(
-        async () => {
-            // If already logged in, no need to check
-            if (firebase.auth.currentUser) {
-                return
-            }
-            try {
-                const result = await firebase.auth.getRedirectResult()
-                console.log('Received Redirect result: ', result)
-                const { user, additionalUserInfo, credential } = result
-                if (!user) {
-                    console.log('No Twitter Redirect Result!')
-                    return
-                }
-                console.log('Current user after redirect: ', firebase.auth.currentUser)
-                // Register user for first time
-            }
-            catch (error) {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
-                // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
-                console.log(error)
-            }
-
-        }, [firebase.auth])
-
-    useEffect(() => {
-        console.log('Current user in Twitter Checking Component: ', firebase.auth.currentUser)
-        getTwitterResult()
-    }, [getTwitterResult, firebase.auth])
-
-    return (
-        <AppWithAuth />
-    )
-}
-
-
-
-export default AppWithTwitter 
+export default AppWithAuth

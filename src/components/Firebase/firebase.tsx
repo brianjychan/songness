@@ -42,8 +42,11 @@ class Firebase {
     doSignInWithEmailAndPassword = (email: string, password: string) =>
         this.auth.signInWithEmailAndPassword(email, password)
 
-    doSignOut = () => this.auth.signOut()
+    doSignOut = () => {
+        this.auth.signOut();
+        window.location.href = 'http://localhost:3000/'
+    }
 
 }
 
-export { Firebase}
+export { Firebase }
