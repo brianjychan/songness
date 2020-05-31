@@ -15,9 +15,6 @@ const client_id = '352d765702214b98a6b4c35b4012c392'; // Your client id
 const client_secret = functions.config().clientinfo.secret; // Your secret
 const redirect_uri = 'http://us-central1-songness-9ae05.cloudfunctions.net/callback'; // Your redirect uri
 
-const build_href = 'https://songness-9ae05.web.app/#'
-//const dev_href = 'http://localhost:3000/#'
-
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -109,18 +106,18 @@ exports.callback = functions.https.onRequest((req, res) => {
                 } catch (e) {
                     console.log(e)
                 }
-                admin.firestore().collection('users').doc(uid).update({ ...bod, access_token: access_token, refresh_token: refresh_token }).catch(e => { console.log(e) })
+                admin.firestore().collection('users').doc(uid).set({ ...bod, access_token: access_token, refresh_token: refresh_token }).catch(e => { console.log(e) })
                 //admin.firestore().collection('users').doc(uid).update({ access_token: access_token, refresh_token: refresh_token })
             });
 
             // we can also pass the token to the browser to make requests from there
-            res.redirect(build_href +
+            res.redirect('https://songness-9ae05.web.app/#' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
                 }));
         } else {
-            res.redirect(build_href +
+            res.redirect('https://songness-9ae05.web.app/#' +
                 querystring.stringify({
                     response: response.statusCode
                 }));
