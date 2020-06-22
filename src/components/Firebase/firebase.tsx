@@ -47,7 +47,7 @@ class Firebase {
 
     doSignOut = () => {
         this.auth.signOut();
-        window.location.href = build_href;
+        window.location.href = dev_href;
     }
 
 }

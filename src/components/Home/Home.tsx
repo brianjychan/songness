@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useFirebase, Firebase } from '../Firebase'
-import { Button, Container, Row, Col, Spinner } from 'react-bootstrap'
+import { Button, ButtonGroup, Container, Row, Col, Spinner, Jumbotron, Image } from 'react-bootstrap'
 import { useSession } from '../Session'
-import Iframe from 'react-iframe'
+import InputRange from 'react-input-range'
+import 'react-input-range/lib/css/index.css'
 import styles from './Home.module.css'
+
+import Dance from "../../icons/disco-ball.png"
+import Energy from "../../icons/megaphone.png"
+import Valence from "../../icons/sun.png"
+import Tempo from "../../icons/rhythm.png"
+
 import { functions, auth, firestore } from 'firebase'
 
 const HomePage: React.FC = () => {
@@ -23,15 +30,15 @@ const HomePage: React.FC = () => {
     const [playlistMatches, setPlaylistMatches] = useState([] as any);
 
     //settings
-    const [min_danceability, setMinDance] = useState<Number>();
-    const [min_energy, setMinEnergy] = useState<Number>();
-    const [min_valence, setMinValence] = useState<Number>();
-    const [min_tempo, setMinTempo] = useState<Number>();
+    const [min_danceability, setMinDance] = useState<number>(0);
+    const [min_energy, setMinEnergy] = useState<number>(0);
+    const [min_valence, setMinValence] = useState<number>(0);
+    const [min_tempo, setMinTempo] = useState<number>(0);
 
-    const [max_danceability, setMaxDance] = useState<Number>();
-    const [max_energy, setMaxEnergy] = useState<Number>();
-    const [max_valence, setMaxValence] = useState<Number>();
-    const [max_tempo, setMaxTempo] = useState<Number>();
+    const [max_danceability, setMaxDance] = useState<number>(1);
+    const [max_energy, setMaxEnergy] = useState<number>(1);
+    const [max_valence, setMaxValence] = useState<number>(1);
+    const [max_tempo, setMaxTempo] = useState<number>(300);
 
 
     const getHashParams = () => {
@@ -88,6 +95,15 @@ const HomePage: React.FC = () => {
     }
 
     const refreshCurrentSong = async (params) => {
+        setMinDance(0)
+        setMinEnergy(0)
+        setMinValence(0)
+        setMinTempo(0)
+
+        setMaxDance(1)
+        setMaxEnergy(1)
+        setMaxValence(1)
+        setMaxTempo(300)
         const curSong = await getCurrentSong(params);
         if (curSong) {
             if (curSong.data) {
@@ -272,107 +288,134 @@ const HomePage: React.FC = () => {
             return ''
         } else {
             return (
-                <Row>
+                <Container>
                     <Row>
-                        <h2>{rec?.data?.tracks[0]?.name} by {rec?.data?.tracks[0]?.artists[0].name}</h2>
+                        <iframe src={`https://open.spotify.com/embed/track/${rec?.data?.tracks[0]?.id}`} frameBorder="0" width="100%" height="80" allow="encrypted-media"></iframe>
                     </Row>
-                    <Row>
-                        <Col>
-                            <Row>
-                                <Button onClick={() => setMaxDance(recSongFeatures?.data?.danceability)}>Set Max</Button>
-                            </Row>
-                            <Row>
-                                <h3>Danceability: {recSongFeatures?.data?.danceability}</h3>
-                            </Row>
-                            <Row>
-                                <Button onClick={() => setMinDance(recSongFeatures?.data?.danceability)}>Set Min</Button>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <Row>
-                                <Button onClick={() => setMaxEnergy(recSongFeatures?.data?.energy)}>Set Max</Button>
-                            </Row>
-                            <Row>
-                                <h3>Energy: {recSongFeatures?.data?.energy}</h3>
-                            </Row>
-                            <Row>
-                                <Button onClick={() => setMinEnergy(recSongFeatures?.data?.energy)}>Set Min</Button>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <Row>
-                                <Button onClick={() => setMaxValence(recSongFeatures?.data?.valence)}>Set Max</Button>
-                            </Row>
-                            <Row>
-                                <h3>Valence: {recSongFeatures?.data?.valence}</h3>
-                            </Row>
-                            <Row>
-                                <Button onClick={() => setMinValence(recSongFeatures?.data?.valence)}>Set Min</Button>
-                            </Row>
-                        </Col>
-                        <Col>
-                            <Row>
-                                <Button onClick={() => setMaxTempo(recSongFeatures?.data?.tempo)}>Set Max</Button>
-                            </Row>
-                            <Row>
-                                <h3>Tempo: {recSongFeatures?.data?.tempo}</h3>
-                            </Row>
-                            <Row>
-                                <Button onClick={() => setMinTempo(recSongFeatures?.data?.tempo)}>Set Min</Button>
-                            </Row>
+                    <Container className="centerItems">
+                        <Row style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 25, paddingBottom: 20 }}>
+                            <Col xs="4" lg="3" style={{ paddingBottom: 15, marginRight: 15 }}>
+                                <Image src={Dance} fluid />
+                            </Col>
+                            <Col>
+                                <Row style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 40 }}>
+                                    <h2>Rhythm: {recSongFeatures?.data?.danceability}</h2>
+                                    <ButtonGroup>
+                                        <Button variant="info" onClick={() => setMinDance(recSongFeatures?.data?.danceability)}>Set Min</Button>
 
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Iframe url={`https://open.spotify.com/embed/track/${rec?.data?.tracks[0]?.id}`} allow='encrypted-media' />
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h3>Min Danceability: {min_danceability}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Max Danceability: {max_danceability}</h3>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h3>Min Energy: {min_energy}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Max Energy: {max_energy}</h3>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h3>Min Valence: {min_valence}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Max Valence: {max_valence}</h3>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h3>Min Tempo: {min_tempo}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Max Tempo: {max_tempo}</h3>
-                        </Col>
-                    </Row>
-                </Row>
-                /*<Row>
-                            <Col>
-                                <h3>Danceability: {curSongFeatures?.data?.danceability}</h3>
+                                        <Button variant="info" onClick={() => setMaxDance(recSongFeatures?.data?.danceability)}>Set Max</Button>
+                                    </ButtonGroup>
+                                </Row>
+                                <Row>
+                                    <InputRange
+                                        maxValue={1}
+                                        minValue={0}
+                                        step={0.01}
+                                        value={{ min: min_danceability, max: max_danceability }}
+                                        formatLabel={(value, type) => {
+                                            return value.toFixed(3);
+                                        }}
+                                        onChange={value => {
+                                            if (typeof value === 'object') {
+                                                setMinDance(value.min)
+                                                setMaxDance(value.max)
+                                                console.log(value)
+                                            }
+                                        }} />
+                                </Row>
+                            </Col>
+                        </Row>
+                        <Row style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 25, paddingBottom: 20 }}>
+                            <Col xs="4" lg="3" style={{ paddingBottom: 15, marginRight: 15 }}>
+                                <Image src={Energy} fluid />
                             </Col>
                             <Col>
-                                <h3>Energy: {curSongFeatures?.data?.energy}</h3>
+                                <Row style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 40 }}>
+                                    <h2>Energy: {recSongFeatures?.data?.energy}</h2>
+                                    <ButtonGroup>
+                                        <Button variant="info" onClick={() => setMinEnergy(recSongFeatures?.data?.energy)}>Set Min</Button>
+                                        <Button variant="info" onClick={() => setMaxEnergy(recSongFeatures?.data?.energy)}>Set Max</Button>
+                                    </ButtonGroup>
+                                </Row>
+                                <Row>
+                                    <InputRange
+                                        maxValue={1}
+                                        minValue={0}
+                                        step={0.01}
+                                        value={{ min: min_energy, max: max_energy }}
+                                        formatLabel={(value, type) => {
+                                            return value.toFixed(3);
+                                        }}
+                                        onChange={value => {
+                                            if (typeof value === 'object') {
+                                                setMinEnergy(value.min)
+                                                setMaxEnergy(value.max)
+                                            }
+                                        }} />
+                                </Row>
+                            </Col>
+
+                        </Row>
+                        <Row style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 25, paddingBottom: 20 }}>
+                            <Col xs="4" lg="3" style={{ paddingBottom: 15, marginRight: 15 }}>
+                                <Image src={Valence} fluid />
                             </Col>
                             <Col>
-                                <h3>Valence: {curSongFeatures?.data?.valence}</h3>
+                                <Row style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 40 }}>
+                                    <h2>Valence: {recSongFeatures?.data?.valence}</h2>
+                                    <ButtonGroup>
+                                        <Button variant="info" onClick={() => setMinValence(recSongFeatures?.data?.valence)}>Set Min</Button>
+                                        <Button variant="info" onClick={() => setMaxValence(recSongFeatures?.data?.valence)}>Set Max</Button>
+                                    </ButtonGroup>
+                                </Row>
+                                <Row>
+                                    <InputRange
+                                        maxValue={1}
+                                        minValue={0}
+                                        step={0.01}
+                                        value={{ min: min_valence, max: max_valence }}
+                                        formatLabel={(value, type) => {
+                                            return value.toFixed(3);
+                                        }}
+                                        onChange={value => {
+                                            if (typeof value === 'object') {
+                                                setMinValence(value.min)
+                                                setMaxValence(value.max)
+                                            }
+                                        }} />
+                                </Row>
+                            </Col>
+                        </Row>
+                        <Row style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 25, paddingBottom: 20 }}>
+                            <Col xs="4" lg="3" style={{ paddingBottom: 15, marginRight: 15 }}>
+                                <Image src={Tempo} fluid />
                             </Col>
                             <Col>
-                                <h3>Tempo: {curSongFeatures?.data?.tempo}</h3>
+                                <Row style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 40 }}>
+                                    <h2>Tempo: {recSongFeatures?.data?.tempo}</h2>
+                                    <ButtonGroup>
+                                        <Button variant="info" onClick={() => setMinTempo(recSongFeatures?.data?.tempo)}>Set Min</Button>
+                                        <Button variant="info" onClick={() => setMaxTempo(recSongFeatures?.data?.tempo)}>Set Max</Button>
+                                    </ButtonGroup>
+                                </Row>
+                                <Row>
+                                    <InputRange
+                                        maxValue={300}
+                                        minValue={0}
+                                        value={{ min: min_tempo, max: max_tempo }}
+                                        onChange={value => {
+                                            if (typeof value === 'object') {
+                                                setMinTempo(value.min)
+                                                setMaxTempo(value.max)
+                                            }
+                                        }} />
+                                </Row>
+
                             </Col>
-                        </Row>*/
+
+                        </Row>
+                    </Container>
+                </Container>
             )
         }
     }
@@ -395,39 +438,63 @@ const HomePage: React.FC = () => {
         if (currentSong.data) {
             return (
                 <Container className={styles.paddingTop}>
-                    <Row className={styles.paddingTop}>
-                        <h1>Welcome, {auth().currentUser?.displayName}</h1>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h2>Your current song: {currentSong.data.item.name} by {currentSong.data.item.artists[0].name}</h2>
-                        </Col>
-                        <Col>
-                            <Button onClick={() => { refreshCurrentSong(params) }}>Refresh</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <h3>Danceability: {curSongFeatures?.data?.danceability}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Energy: {curSongFeatures?.data?.energy}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Valence: {curSongFeatures?.data?.valence}</h3>
-                        </Col>
-                        <Col>
-                            <h3>Tempo: {curSongFeatures?.data?.tempo}</h3>
-                        </Col>
-                    </Row>
-                    <Row className={styles.paddingTop}>
-                        <Col>
-                            <Button onClick={() => { getRecommendation(params, currentSong.data.item.id) }}>Generate Recommendation</Button>
-                        </Col>
-                        <Col>
-                            <Button onClick={() => { getPlaylistMatches(params, currentSong.data.item) }}>Playlist Search</Button>
-                        </Col>
-                    </Row>
+                    <Jumbotron>
+                        <Container>
+                            <Row>
+                                <Col>
+                                    <Row>
+                                        <h2>{currentSong.data.item.name}</h2>
+                                    </Row>
+                                    <Row>
+                                        <h2>{currentSong.data.item.artists[0].name}</h2>
+                                    </Row>
+                                </Col>
+                                <Col xs="4">
+                                    <Button variant="outline-info" onClick={() => { refreshCurrentSong(params) }}>Refresh ⟲</Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Row>
+                                        <div style={{ width: 50, paddingRight: 10 }}>
+                                            <Image src={Dance} fluid />
+                                        </div>
+                                        <h3>Rhythm: {curSongFeatures?.data?.danceability}</h3>
+                                    </Row>
+                                </Col>
+                                <Col>
+                                    <Row>
+                                        <div style={{ width: 50, paddingRight: 10 }}>
+                                            <Image src={Energy} fluid />
+                                        </div>
+                                        <h3>Energy: {curSongFeatures?.data?.energy}</h3>
+                                    </Row>
+                                </Col>
+                                <Col>
+                                    <Row>
+                                        <div style={{ width: 50, paddingRight: 10 }}>
+                                            <Image src={Valence} fluid />
+                                        </div>
+                                        <h3>Valence: {curSongFeatures?.data?.valence}  </h3>
+                                    </Row>
+                                </Col>
+                                <Col>
+                                    <Row>
+                                        <div style={{ width: 50, paddingRight: 10 }}>
+                                            <Image src={Tempo} fluid />
+                                        </div>
+                                        <h3>Tempo: {curSongFeatures?.data?.tempo}</h3>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            <Row className={styles.paddingTop} style={{ display: 'flex' }}>
+                                <ButtonGroup>
+                                    <Button variant="info" style={{ marginRight: 25 }} onClick={() => { getRecommendation(params, currentSong.data.item.id) }}>Recommendation</Button>
+                                    <Button variant="info" onClick={() => { getPlaylistMatches(params, currentSong.data.item) }}>Playlist Search</Button>
+                                </ButtonGroup>
+                            </Row>
+                        </Container>
+                    </Jumbotron>
                     <div>
                         {playlistsView()}
                     </div>
@@ -435,7 +502,7 @@ const HomePage: React.FC = () => {
                         {recView()}
                     </div>
                     <Row className={styles.paddingTop}>
-                        <Button onClick={() => { firebase.doSignOut() }}>Sign Out</Button>
+                        <Button variant="outline-info" onClick={() => { firebase.doSignOut() }}>Sign Out</Button>
                     </Row>
                 </Container>
             )
@@ -453,14 +520,14 @@ const HomePage: React.FC = () => {
                     <h2>Play a song from your Spotify client.</h2>
                 </Col>
                 <Col>
-                    <Button onClick={() => {
+                    <Button variant="outline-info" onClick={() => {
                         console.log('params before getSong = ', params)
                         refreshCurrentSong(params)
-                    }}>Refresh</Button>
+                    }}>Refresh ⟲</Button>
                 </Col>
             </Row>
             <Row className={styles.paddingTop}>
-                <Button onClick={() => { firebase.doSignOut() }}>Sign Out</Button>
+                <Button variant="outline-info" onClick={() => { firebase.doSignOut() }}>Sign Out</Button>
             </Row>
         </Container>
     )
