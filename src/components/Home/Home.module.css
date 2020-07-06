@@ -1,11 +1,20 @@
 .paddingTop {
     padding-top: 5rem;
+    padding-bottom: 5rem;
 }
 
 .centerItems {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.fontLess {
+    font-weight: normal;
+}
+
+.opaqueLess {
+    opacity: 0.5
 }
 
 .refresh {

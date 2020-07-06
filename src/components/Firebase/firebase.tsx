@@ -3,8 +3,8 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 
-const build_href = 'https://songness-9ae05.web.app/'
-const dev_href = 'http://localhost:3000/'
+const build_href = 'https://songness.app/'
+//const dev_href = 'http://localhost:3000/'
 
 const config = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -45,9 +45,9 @@ class Firebase {
     doSignInWithEmailAndPassword = (email: string, password: string) =>
         this.auth.signInWithEmailAndPassword(email, password)
 
-    doSignOut = () => {
-        this.auth.signOut();
-        window.location.href = dev_href;
+    doSignOut = async () => {
+        await this.auth.signOut();
+        window.location.href = build_href;
     }
 
 }

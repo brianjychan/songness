@@ -111,16 +111,27 @@ exports.callback = functions.https.onRequest((req, res) => {
             });
 
             // we can also pass the token to the browser to make requests from there
-            res.redirect('http://localhost:3000/#' +
+            res.redirect('https://songness.app/#' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
                 }));
+
+            /*res.redirect('http://localhost:3000/#' +
+                querystring.stringify({
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                }));*/
         } else {
-            res.redirect('http://localhost:3000/#' +
+            res.redirect('https://songness.app/#' +
                 querystring.stringify({
                     response: response.statusCode
                 }));
+
+            /*res.redirect('http://localhost:3000/#' +
+                querystring.stringify({
+                    response: response.statusCode
+                }));*/
         }
     });
     // }
@@ -231,7 +242,7 @@ exports.getRecommendation = functions.https.onCall(async (data, context) => {
     const options = {
         url: 'https://api.spotify.com/v1/recommendations?' + querystring.stringify({
             ...queryParams,
-            limit: 1,
+            limit: 10,
             seed_tracks: [songID]
         }),
         headers: { 'Authorization': 'Bearer ' + access_token },
