@@ -19,7 +19,6 @@ const HomePage: React.FC = () => {
     const firebase = useFirebase()
     const session = useSession()
 
-    //const [params, setParams] = useState({} as any);
     const [currentSong, setCurrentSong] = useState(null as any);
     const [params, setParams] = useState({} as any);
     const [curSongFeatures, setCurSongFeatures] = useState(null as any);
@@ -27,9 +26,11 @@ const HomePage: React.FC = () => {
     //list of recs
     const [recsList, setRecsList] = useState(null as any);
 
+    //already played tracks
     const [ignoreTracks, setIgnoreTracks] = useState<Array<string>>([]);
     const [currentRecIndex, setCurrentRecIndex] = useState<number>(0);
 
+    //recommendation
     const [rec, setRec] = useState(null as any);
     const [recSongFeatures, setRecSongFeatures] = useState(null as any);
 
@@ -55,7 +56,7 @@ const HomePage: React.FC = () => {
     const [max_valence, setMaxValence] = useState<number>(1);
     const [max_tempo, setMaxTempo] = useState<number>(300);
 
-    //activeButtons
+    //active/loading buttons
     //loading for initial Log in with Spotify button
     const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
@@ -66,13 +67,15 @@ const HomePage: React.FC = () => {
     const [searchActive, setSearchActive] = useState<boolean>(false);
     const [searchLoading, setSearchLoading] = useState<boolean>(false);
 
+    //progress bar for playlist search
     const [playlistsGotten, setPlaylistsGotten] = useState<boolean>(false);
     const [totalIndexes, setTotalIndexes] = useState<number>(1);
     const [currentCount, setCurrentCount] = useState<number>(0);
 
+    //used to tell if still loading or no data
     const [noData, setNoData] = useState<boolean>(false);
 
-
+    //initial parsing of access / refresh tokens
     const getHashParams = () => {
         var hashParams = {} as any;
         var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -84,7 +87,7 @@ const HomePage: React.FC = () => {
         return hashParams;
     }
 
-
+    //get seed track
     const getCurrentSong = async (pars) => {
         try {
             const currentSongBody = await functions().httpsCallable('getCurrentSong')({ access_token: pars.access_token, refresh_token: pars.refresh_token, uid: auth().currentUser?.uid })
@@ -103,6 +106,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //analyze track
     const getSongFeatures = async (pars, song, type) => {
         try {
             const curSongFeats = await functions().httpsCallable('getSongFeatures')({ access_token: pars.access_token, refresh_token: pars.refresh_token, songID: song, uid: auth().currentUser?.uid })
@@ -146,6 +150,7 @@ const HomePage: React.FC = () => {
         setRefreshActive(false);
     }
 
+    //uses seed track to obtain 10 recommendations at a time
     const getRecommendation = async (pars, song) => {
         try {
             var newPars = pars
@@ -177,6 +182,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //executes if there are still recs left from getRecommendation()
     const getLocalRecommendation = async (pars, recommendation, song) => {
         try {
             var i = currentRecIndex;
@@ -215,6 +221,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //obtains a user's playlists for playlist searching
     const getPlaylists = async (pars) => {
         try {
             var newPars = pars;
@@ -244,6 +251,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //obtains matches
     const findPlaylistMatches = async (pars, song, plists) => {
         try {
             var newPars = pars;
@@ -282,6 +290,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //executes the whole get playlist flow
     const getPlaylistMatches = async (pars, song) => {
         const plist_matches = [] as any;
         var count = 0;
@@ -313,22 +322,7 @@ const HomePage: React.FC = () => {
         setSearchLoading(false);
     }
 
-    /*const playRecommendation = async (pars, song) => {
-        try {
-            console.log(pars);
-            const play = await functions().httpsCallable('playRecommendation')({ access_token: pars.access_token, refresh_token: pars.refresh_token, songID: song, uid: auth().currentUser?.uid })
-            if (play?.data?.access_token) {
-                const new_token = play.data.access_token
-                setParams({ ...params, access_token: new_token })
-                return playRecommendation({ access_token: new_token, refresh_token: pars.refresh_token }, song);
-            } else {
-                console.log(play.data);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }*/
-
+    //initial loading of data
     useEffect(() => {
         const getData = async () => {
             try {
@@ -369,6 +363,8 @@ const HomePage: React.FC = () => {
         }
     }, [session, firebase])
 
+
+    //view if playlist search is ongoing
     const playlistsLoadingView = () => {
         return (
             <>
@@ -401,6 +397,7 @@ const HomePage: React.FC = () => {
         )
     }
 
+    //view if playlist search is active
     const playlistsView = () => {
         if (playlistMatches.length < 1) {
             return (
@@ -417,6 +414,7 @@ const HomePage: React.FC = () => {
         }
     }
 
+    //view if recommendation is being retrieved
     const recLoadingView = () => {
         return (
             <Container style={{ width: '90%' }}>
@@ -433,6 +431,7 @@ const HomePage: React.FC = () => {
         )
     }
 
+    //view if recommendation is active
     const recView = () => {
         return (
             <Container style={{ width: '90%' }}>
@@ -620,6 +619,7 @@ const HomePage: React.FC = () => {
         )
     }
 
+    //initial screen with no user
     if (!auth().currentUser) {
         return (
             <div>
@@ -746,8 +746,7 @@ const HomePage: React.FC = () => {
         )
     }
 
-
-
+    //if a seed track exists
     if (currentSong) {
         if (currentSong.data) {
             return (
@@ -1045,7 +1044,7 @@ const HomePage: React.FC = () => {
         }
     }
 
-
+    //if logged in but no seed track
     return (
         <div>
             <Navbar bg="dark" variant="dark">
@@ -1151,27 +1150,6 @@ const HomePage: React.FC = () => {
             </Navbar>
         </div >
     )
-    /*useEffect(() => {
-        accessFirestore()
-    }, [accessFirestore])
-    console.log()
-    if (session.auth) {
-        return (
-            <div>
-                <p>Home</p>
-                <p>Logged in!</p>
-                <Button variant="info" onClick={() => { firebase.doSignOut() }}>Sign Out</Button>
- 
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <p>Home</p>
-                <Button variant="info" onClick={() => { firebase.doTwitterSignIn() }}>Sign In to Twitter</Button>
-            </div>
-        )
-    }*/
 }
 
 export { HomePage }
