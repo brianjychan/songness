@@ -331,7 +331,7 @@ const HomePage: React.FC = () => {
                 if (hashParams.access_token) {
                     setLoginLoading(true);
 
-                    //create new auth user & get customToken
+                    // create new auth user & get customToken
                     const customToken = await functions().httpsCallable('getCustomToken')({ access_token: hashParams.access_token, refresh_token: hashParams.refresh_token, uid: auth().currentUser?.uid })
 
                     //signin with custom token
@@ -731,7 +731,7 @@ const HomePage: React.FC = () => {
                                     />
                                 </Button>
                                 :
-                                <Button href='https://us-central1-songness-9ae05.cloudfunctions.net/login' variant="info" style={{ width: '90%', paddingLeft: '5%', paddingRight: '5%' }} onClick={() => { setLoginLoading(true) }} block>
+                                <Button href='https://us-central1-songness-3bb81.cloudfunctions.net/login' variant="info" style={{ width: '90%', paddingLeft: '5%', paddingRight: '5%' }} onClick={() => { setLoginLoading(true) }} block>
                                     Log in with Spotify
                                 </Button>
                         }

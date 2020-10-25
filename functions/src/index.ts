@@ -11,9 +11,9 @@ const errors = require('request-promise/errors');
 const querystring = require('querystring');
 //const cookieParser = require('cookie-parser');*/
 
-const client_id = '352d765702214b98a6b4c35b4012c392'; // Your client id
+const client_id = 'e7f02364f6b441ebaef26aee4e72d93c'; // Your client id
 const client_secret = functions.config().clientinfo.secret; // Your secret
-const redirect_uri = 'http://us-central1-songness-9ae05.cloudfunctions.net/callback'; // Your redirect uri
+const redirect_uri = 'https://us-central1-songness-3bb81.cloudfunctions.net/callback'; // Your redirect uri
 
 /**
  * Generates a random string containing numbers and letters
@@ -111,27 +111,30 @@ exports.callback = functions.https.onRequest((req, res) => {
             });
 
             // we can also pass the token to the browser to make requests from there
-            res.redirect('https://songness.app/#' +
+            // Prod
+            res.redirect('https://hungry-mestorf-21d4aa.netlify.app/#' +
                 querystring.stringify({
                     access_token: access_token,
                     refresh_token: refresh_token
                 }));
 
-            /*res.redirect('http://localhost:3000/#' +
-                querystring.stringify({
-                    access_token: access_token,
-                    refresh_token: refresh_token
-                }));*/
+            // Dev
+            // res.redirect('http://localhost:3000/#' +
+            //     querystring.stringify({
+            //         access_token: access_token,
+            //         refresh_token: refresh_token
+            //     }));
         } else {
-            res.redirect('https://songness.app/#' +
+            // Prod
+            res.redirect('https://hungry-mestorf-21d4aa.netlify.app/#' +
                 querystring.stringify({
                     response: response.statusCode
                 }));
-
-            /*res.redirect('http://localhost:3000/#' +
-                querystring.stringify({
-                    response: response.statusCode
-                }));*/
+            // Dev
+            // res.redirect('http://localhost:3000/#' +
+            //     querystring.stringify({
+            //         response: response.statusCode
+            //     }));
         }
     });
     // }
@@ -314,32 +317,3 @@ exports.getPlaylistTracks = functions.https.onCall(async (data, context) => {
         })
 })
 
-/*exports.playRecommendation = functions.https.onCall(async (data, context) => {
-    console.log('data = ', data);
-    const songID = data.songID
-    const access_token = data.access_token;
-    const options = {
-        method: 'PUT',
-        url: 'https://api.spotify.com/v1/me/player/play',
-        form: { "uris": [`spotify:track:${songID}`] },
-        headers: { 'Authorization': 'Bearer ' + access_token },
-        json: true
-    }
-
-    return rp(options)
-        .then(bod => {
-            console.log(bod)
-            return 1;
-        })
-        .catch(errors.StatusCodeError, async (err) => {
-            console.log(err);
-            if (err.statusCode === 41) {
-                return getNewAccessToken(data)
-            }
-        })
-})*/
-
-//const main = express();
-//main.use('*/start', app)
-
-//exports.main = functions.https.onRequest(main);
