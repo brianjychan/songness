@@ -635,7 +635,7 @@ const HomePage: React.FC = () => {
                             height="30"
                             className="d-inline-block align-top"
                         />{' '}
-                            songness
+                            songness-fork (a fork of songness by <a href="https://github.com/ly-chen/songness">Leon Chen</a>)
                         </Navbar.Brand>
                 </Navbar>
                 <Container className={styles.paddingTop}>
@@ -767,7 +767,7 @@ const HomePage: React.FC = () => {
                                 height="30"
                                 className="d-inline-block align-top"
                             />{' '}
-                            songness
+                             songness-fork (a fork of songness by <a href="https://github.com/ly-chen/songness">Leon Chen</a>)
                         </Navbar.Brand>
                         <Nav className="ml-auto">
                             <Button variant="outline-light" size="sm" onClick={() => {
@@ -1063,7 +1063,7 @@ const HomePage: React.FC = () => {
                         height="30"
                         className="d-inline-block align-top"
                     />{' '}
-                            songness
+                           songness-fork (a fork of songness by <a href="https://github.com/ly-chen/songness">Leon Chen</a>)
                 </Navbar.Brand>
                 <Nav className="ml-auto">
                     <Button variant="outline-light" size="sm" onClick={() => {
