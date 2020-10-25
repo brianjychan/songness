@@ -3,7 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/functions'
 
-const build_href = 'https://songness.app/'
+const build_href = 'https://hungry-mestorf-21d4aa.netlify.app'
 //const dev_href = 'http://localhost:3000/'
 
 const config = {

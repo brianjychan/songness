@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useState, useEffect} from 'react'
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
 } from "react-router-dom"
 
 import { ROUTES } from '../../constants'
 import { HomePage } from '../Home'
-import { ProfilePage } from '../Profile'
 import { useFirebase } from '../Firebase'
 import { useSession, SessionContext } from '../Session/'
 
@@ -21,9 +19,6 @@ const MainApp: React.FC = () => {
     return (
         <Router>
             <Switch>
-                {/* <Route path={ROUTES.USERNAME}>
-                    <ProfilePage />
-                </Route> */}
                 <Route path={ROUTES.ROOT}>
                     <HomePage />
                 </Route>

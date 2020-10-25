@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useFirebase, Firebase } from '../Firebase'
+import { useFirebase } from '../Firebase'
 import { Navbar, Nav, Button, ButtonGroup, Container, Row, Col, Spinner, Jumbotron, Image, ProgressBar, OverlayTrigger, Popover, Carousel } from 'react-bootstrap'
 import { useSession } from '../Session'
 import InputRange from 'react-input-range'
@@ -13,7 +13,7 @@ import Tempo from "../../icons/rhythm.png"
 
 import Icon from "../../icons/icon.png"
 
-import { functions, auth, firestore } from 'firebase'
+import { functions, auth } from 'firebase'
 
 const HomePage: React.FC = () => {
     const firebase = useFirebase()
@@ -78,10 +78,12 @@ const HomePage: React.FC = () => {
     //initial parsing of access / refresh tokens
     const getHashParams = () => {
         var hashParams = {} as any;
-        var e, r = /([^&;=]+)=?([^&;]*)/g,
+        var r = /([^&;=]+)=?([^&;]*)/g,
             q = window.location.hash.substring(1);
-        while (e = r.exec(q)) {
+        var e = r.exec(q)
+        while (e) {
             hashParams[e[1]] = decodeURIComponent(e[2]);
+            e = r.exec(q)
         }
         setParams(hashParams);
         return hashParams;
@@ -361,7 +363,8 @@ const HomePage: React.FC = () => {
             loadData().then(userParams => refreshCurrentSong(userParams))
             setNoData(true);
         }
-    }, [session, firebase])
+
+    }, [session, firebase]) // eslint-disable-line
 
 
     //view if playlist search is ongoing
@@ -437,7 +440,7 @@ const HomePage: React.FC = () => {
             <Container style={{ width: '90%' }}>
                 {rec ?
                     <Row>
-                        <iframe src={`https://open.spotify.com/embed/track/${rec.id}`} frameBorder="0" width="100%" height="80" allow="encrypted-media"></iframe>
+                        <iframe src={`https://open.spotify.com/embed/track/${rec.id}`} title="iframe" frameBorder="0" width="100%" height="80" allow="encrypted-media"></iframe>
                     </Row>
                     :
                     <Row>
@@ -647,6 +650,7 @@ const HomePage: React.FC = () => {
                                     <div className={styles.opaqueLess}>
                                         <img className="d-block w-100"
                                             src={Dance}
+                                            alt="dancing"
                                         />
                                     </div>
 
@@ -659,6 +663,7 @@ const HomePage: React.FC = () => {
                                     <div className={styles.opaqueLess}>
                                         <img className="d-block w-100"
                                             src={Energy}
+                                            alt="energy"
                                         />
                                     </div>
 
@@ -671,6 +676,7 @@ const HomePage: React.FC = () => {
                                     <div className={styles.opaqueLess}>
                                         <img className="d-block w-100"
                                             src={Valence}
+                                            alt="valence"
                                         />
                                     </div>
 
@@ -684,6 +690,7 @@ const HomePage: React.FC = () => {
                                     <div className={styles.opaqueLess}>
                                         <img className="d-block w-100"
                                             src={Tempo}
+                                            alt="tempo"
                                         />
                                     </div>
 
